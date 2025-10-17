@@ -15,6 +15,8 @@ model User {
   password   String
   name       String
   role       String
+  Test       Test[]
+  Response   Response[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
