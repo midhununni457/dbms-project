@@ -7,6 +7,7 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  schemas = ["dbmsproj"] 
 }
 
 model User {
@@ -19,6 +20,8 @@ model User {
   Response   Response[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@schema("dbmsproj")
 }
 
 model Test {
@@ -32,6 +35,8 @@ model Test {
   faculty     User      @relation(fields: [facultyId], references: [id])
 
   questions   Question[]
+  
+  @@schema("dbmsproj")
 }
 
 model Question {
@@ -47,6 +52,8 @@ model Question {
   test        Test      @relation(fields: [testId], references: [id])
 
   responses   Response[]
+
+  @@schema("dbmsproj")
 }
 
 model Response {
@@ -61,4 +68,6 @@ model Response {
 
   student   User     @relation(fields: [studentId], references: [id])
   question  Question @relation(fields: [questionId], references: [id])
+
+  @@schema("dbmsproj")
 }
