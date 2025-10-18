@@ -6,8 +6,12 @@ class JWTUtil {
     return jwt.sign({ id, email, role }, JWT_SECRET);
   }
 
-  verify = () => {
+  verify = (token) => {
     return jwt.verify(token, JWT_SECRET);
+  }
+
+  decode = (token) => {
+    return jwt.decode(token, JWT_SECRET);
   }
 }
 
