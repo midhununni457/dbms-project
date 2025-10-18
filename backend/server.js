@@ -1,4 +1,6 @@
-const express = require("express");
+const express = require("express"); 
+require("./utils/env");
+const routes = require("./routes");
 
 const app = express();
 
@@ -8,8 +10,14 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
+app.use("/api", routes);
+
 const PORT = 3001;
 
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  try {
+    console.log(`Server is listening on port ${PORT}`);
+  } catch (error) {
+    console.error("Error starting server:", error);
+  } 
 });
