@@ -39,12 +39,10 @@ class ResponseController {
       },
     });
 
-    return res
-      .status(201)
-      .json({
-        message: "Response created successfully",
-        response: newResponse,
-      });
+    return res.status(201).json({
+      message: "Response created successfully",
+      response: newResponse,
+    });
   };
 
   updateResponse = async (req, res) => {
@@ -52,6 +50,10 @@ class ResponseController {
 
     if (!req.body) throw new BadRequestError("No request body provided");
     const { marksAwarded, isCorrect } = req.body;
+
+    if (!marksAwarded || !isCorrect) {
+      throw new BadRequestError("marksAwarded & isCorrect are required");
+    }
 
     const response = await prisma.response.findUnique({
       where: { id: parseInt(responseId) },
@@ -67,16 +69,14 @@ class ResponseController {
     }
 
     const updatedResponse = await prisma.response.update({
-      data: { marksAwarded, isCorrect },
+      data: { marksAwarded: parseInt(marksAwarded), isCorrect: isCorrect === 'true' },
       where: { id: parseInt(responseId) },
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Response graded successfully",
-        response: updatedResponse,
-      });
+    return res.status(200).json({
+      message: "Response graded successfully",
+      response: updatedResponse,
+    });
   };
 
   getResponseById = async (req, res) => {
@@ -104,27 +104,29 @@ class ResponseController {
   getAllResponsesByStudentForTest = async (req, res) => {
     const { testId } = req.params;
     const { studentId } = req.query; // For faculty to check any student's responses
-    
+
     // If no studentId provided, use current user (student checking their own)
     const targetStudentId = studentId ? parseInt(studentId) : req.user.id;
-    
+
     // If faculty is checking another student's responses, verify test ownership
     if (studentId && req.user.id !== targetStudentId) {
       const test = await prisma.test.findUnique({
-        where: { id: parseInt(testId) }
+        where: { id: parseInt(testId) },
       });
       if (!test) throw new NotFoundError("Test not found");
       if (test.facultyId !== req.user.id) {
-        throw new ForbiddenError("You are not authorized to view these responses.");
+        throw new ForbiddenError(
+          "You are not authorized to view these responses."
+        );
       }
     }
 
     const responses = await prisma.response.findMany({
-      where: { 
+      where: {
         studentId: targetStudentId,
         question: {
-          testId: parseInt(testId)
-        }
+          testId: parseInt(testId),
+        },
       },
       include: {
         question: true,
@@ -136,13 +138,11 @@ class ResponseController {
         },
       },
     });
-    
-    return res
-      .status(200)
-      .json({
-        message: "Student responses for test fetched successfully",
-        responses: responses,
-      });
+
+    return res.status(200).json({
+      message: "Student responses for test fetched successfully",
+      responses: responses,
+    });
   };
 
   getAllResponsesByQuestion = async (req, res) => {
@@ -160,12 +160,10 @@ class ResponseController {
       },
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Responses for question fetched successfully",
-        responses: responses,
-      });
+    return res.status(200).json({
+      message: "Responses for question fetched successfully",
+      responses: responses,
+    });
   };
 }
 
