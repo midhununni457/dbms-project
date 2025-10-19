@@ -101,26 +101,6 @@ class ResponseController {
       .json({ message: "Response fetched successfully", response: response });
   };
 
-  getAllResponses = async (req, res) => {
-    const responses = await prisma.response.findMany({
-      include: {
-        question: true,
-        student: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
-    return res
-      .status(200)
-      .json({
-        message: "All responses fetched successfully",
-        responses: responses,
-      });
-  };
-
   getAllResponsesByStudentForTest = async (req, res) => {
     const { testId } = req.params;
     const { studentId } = req.query; // For faculty to check any student's responses
@@ -186,24 +166,6 @@ class ResponseController {
         message: "Responses for question fetched successfully",
         responses: responses,
       });
-  };
-
-  deleteResponse = async (req, res) => {
-    const { responseId } = req.params;
-
-    const response = await prisma.response.findUnique({
-      where: { id: parseInt(responseId) },
-    });
-    if (!response) throw new NotFoundError("Response not found");
-    if (response.studentId !== req.user.id)
-      throw new ForbiddenError(
-        "You are not authorized to delete this response."
-      );
-
-    await prisma.response.delete({
-      where: { id: parseInt(responseId), studentId: req.user.id },
-    });
-    return res.status(200).json({ message: "Response deleted successfully" });
   };
 }
 

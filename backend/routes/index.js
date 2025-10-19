@@ -8,7 +8,7 @@ const AuthMiddleware = require("../middlewares/auth");
 router.use("/auth", authRouter);
 
 // except auth routes, all routes require the user to be logged in
-router.use(AuthMiddleware.authenticateUser); 
+router.use(AuthMiddleware.authenticateUser);
 router.use("/tests", testRouter);
 router.use("/questions", questionRouter);
 router.use("/responses", responseRouter);
