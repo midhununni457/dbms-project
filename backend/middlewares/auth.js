@@ -18,7 +18,7 @@ class AuthMiddleware {
     try {
       JWTUtil.verify(token);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       throw new UnauthorizedError("Invalid token");
     }
 
@@ -34,6 +34,14 @@ class AuthMiddleware {
       throw new ForbiddenError("You do not have permission to access this.");
 
     if (req.user.role === "faculty") next();
+    else throw new ForbiddenError("You do not have permission to access this.");
+  };
+
+  authorizeStudent = (req, res, next) => {
+    if (!req.user)
+      throw new ForbiddenError("You do not have permission to access this.");
+
+    if (req.user.role === "student") next();
     else throw new ForbiddenError("You do not have permission to access this.");
   };
 }
