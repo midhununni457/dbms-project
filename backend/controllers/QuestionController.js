@@ -36,15 +36,20 @@ class QuestionController {
 
   createQuestion = async (req, res) => {
     if (!req.body) throw new BadRequestError("No request body provided");
-    const { text, type, options, answer } = req.body;
+    const { text, type, options, answer, marks, testId } = req.body;
 
-    if (!text || !type) {
-      throw new BadRequestError("Text and type are required");
+    if (!text || !type || !testId || !marks) {
+      throw new BadRequestError("Text, type, testId, and marks are required");
     }
 
     if (!["mcq", "long", "short"].includes(type)) {
       throw new BadRequestError("Invalid question type");
     }
+
+    const test = await prisma.test.findUnique({
+      where: { id: parseInt(testId) },
+    });
+    if (!test) throw new NotFoundError("Test not found");
 
     const question = await prisma.question.create({
       data: {
@@ -52,6 +57,8 @@ class QuestionController {
         type,
         options: type === "mcq" ? options : [],
         answer: type === "mcq" ? answer : null,
+        marks: parseFloat(marks),
+        testId: parseInt(testId),
       },
     });
 
@@ -64,7 +71,7 @@ class QuestionController {
     const { id } = req.params;
 
     if (!req.body) throw new BadRequestError("No request body provided");
-    const { text, type, options, answer } = req.body;
+    const { text, type, options, answer, marks } = req.body;
 
     const existing = await prisma.question.findUnique({
       where: { id: parseInt(id) },
@@ -82,6 +89,7 @@ class QuestionController {
         type,
         options: type === "mcq" ? options : [],
         answer: type === "mcq" ? answer : null,
+        marks: marks ? parseFloat(marks) : existing.marks,
       },
     });
 
