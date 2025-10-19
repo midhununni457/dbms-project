@@ -7,8 +7,13 @@ const {
   isValidQuestionID,
 } = require("../middlewares/response");
 
-router.use(AuthMiddleware.authorizeStudent)
-router.post("/create", validateResponse, responseController.createResponse);
+// Student only route
+router.post(
+  "/create",
+  AuthMiddleware.authorizeStudent,
+  validateResponse,
+  responseController.createResponse
+);
 
 // Faculty only routes
 router.use(AuthMiddleware.authorizeFaculty);
