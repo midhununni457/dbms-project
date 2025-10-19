@@ -31,6 +31,5 @@ router.get(
   "/test/:testId/student",
   responseController.getAllResponsesByStudentForTest
 );
-router.get("/test/:testId", responseController.getAllResponsesByStudentForTest);
 
 module.exports = router;

@@ -3,14 +3,22 @@ const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
 
 class QuestionController {
-  getQuestions = async (req, res) => {
-    const questions = await prisma.question.findMany();
-    return res
-      .status(200)
-      .json({
-        message: "Questions fetched successfully",
-        questions: questions,
-      });
+  getQuestionsForTest = async (req, res) => {
+    const { testId } = req.params;
+
+    const test = await prisma.test.findUnique({
+      where: { id: parseInt(testId) },
+    });
+    if (!test) throw new NotFoundError("Test not found");
+
+    const questions = await prisma.question.findMany({
+      where: { testId: parseInt(testId) },
+    });
+
+    return res.status(200).json({
+      message: "Questions fetched successfully",
+      questions: questions,
+    });
   };
 
   getQuestionById = async (req, res) => {
