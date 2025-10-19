@@ -3,11 +3,13 @@ require("./utils/env");
 const routes = require("./routes");
 const { NotFoundError } = require("./utils/error");
 const errorHandler = require("./middlewares/error");
+const cors = require("cors");
 
 const app = express();
 const PORT = 3001;
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Hello World");
