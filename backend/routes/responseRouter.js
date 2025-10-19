@@ -7,7 +7,7 @@ const {
   isValidQuestionID,
 } = require("../middlewares/response");
 
-// Public routes (faculty can view all responses)
+router.use(AuthMiddleware.authorizeStudent)
 router.post("/create", validateResponse, responseController.createResponse);
 
 // Faculty only routes
