@@ -36,6 +36,7 @@ class ResponseController {
         studentId: req.user.id,
         isCorrect,
         marksAwarded,
+        testId: question.testId,
       },
     });
 

@@ -89,11 +89,34 @@ class TestController {
             name: true,
           },
         },
+        responses: {
+          select: {
+            studentId: true,
+          },
+          distinct: ["studentId"],
+        },
       },
     });
+
+    const testsWithStudentCount = tests.map((test) => {
+      return {
+        id: test.id,
+        title: test.title,
+        description: test.description,
+        createdAt: test.createdAt,
+        updatedAt: test.updatedAt,
+        facultyId: test.facultyId,
+        facultyName: test.faculty.name,
+        attemptedStudents: test.responses.length,
+      };
+    });
+
     return res
       .status(200)
-      .json({ message: "All tests fetched successfully", tests: tests });
+      .json({
+        message: "All tests fetched successfully",
+        tests: testsWithStudentCount,
+      });
   };
 
   deleteTest = async (req, res) => {

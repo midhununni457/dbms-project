@@ -7,67 +7,71 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-  schemas = ["dbmsproj"] 
+  schemas   = ["dbmsproj"]
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  password   String
-  name       String
-  role       String
-  Test       Test[]
-  Response   Response[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String
+  name      String
+  role      String
+  Test      Test[]
+  Response  Response[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@schema("dbmsproj")
 }
 
 model Test {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  facultyId   Int
-  faculty     User      @relation(fields: [facultyId], references: [id])
+  facultyId Int
+  faculty   User @relation(fields: [facultyId], references: [id])
 
-  questions   Question[]
-  
+  questions Question[]
+  responses Response[]
+
   @@schema("dbmsproj")
 }
 
 model Question {
-  id          Int       @id @default(autoincrement())
-  text        String
-  type        String
-  options     Json?
-  answer      String?
-  marks       Float
-  createdAt   DateTime  @default(now())
+  id        Int      @id @default(autoincrement())
+  text      String
+  type      String
+  options   Json?
+  answer    String?
+  marks     Float
+  createdAt DateTime @default(now())
 
-  testId      Int
-  test        Test      @relation(fields: [testId], references: [id])
+  testId Int
+  test   Test @relation(fields: [testId], references: [id])
 
-  responses   Response[]
+  responses Response[]
 
   @@schema("dbmsproj")
 }
 
 model Response {
-  id            Int       @id @default(autoincrement())
-  answer        String
-  isCorrect     Boolean?
-  marksAwarded  Float?
-  submittedAt   DateTime  @default(now())
+  id           Int      @id @default(autoincrement())
+  answer       String
+  isCorrect    Boolean?
+  marksAwarded Float?
+  submittedAt  DateTime @default(now())
 
-  studentId     Int
-  questionId    Int
+  studentId  Int
+  questionId Int
 
-  student   User     @relation(fields: [studentId], references: [id])
-  question  Question @relation(fields: [questionId], references: [id])
+  testId Int?
+
+  student  User     @relation(fields: [studentId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+  test     Test?    @relation(fields: [testId], references: [id])
 
   @@schema("dbmsproj")
 }
