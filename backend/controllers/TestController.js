@@ -72,12 +72,28 @@ class TestController {
   getAllTests = async (req, res) => {
     const tests = await prisma.test.findMany({
       include: {
-        faculty: true,
+        faculty: {
+          select: {
+            name: true,
+          },
+        },
       },
+    });
+
+    const testsWithFacultyName = tests.map((test) => {
+      return {
+        id: test.id,
+        title: test.title,
+        description: test.description,
+        createdAt: test.createdAt,
+        updatedAt: test.updatedAt,
+        facultyName: test.faculty.name,
+        facultyId: test.facultyId,
+      };
     });
     return res
       .status(200)
-      .json({ message: "All tests fetched successfully", tests: tests });
+      .json({ message: "All tests fetched successfully", tests: testsWithFacultyName });
   };
 
   getAllTestsByFaculty = async (req, res) => {
@@ -111,12 +127,10 @@ class TestController {
       };
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "All tests fetched successfully",
-        tests: testsWithStudentCount,
-      });
+    return res.status(200).json({
+      message: "All tests fetched successfully",
+      tests: testsWithStudentCount,
+    });
   };
 
   deleteTest = async (req, res) => {
