@@ -2,7 +2,15 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { createContext, useContext, useState, useMemo, useCallback, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+} from "react";
+import { getErrMsg } from "@/hooks/errorParser";
 
 export const ApiContext = createContext({
   accessToken: "",
@@ -22,6 +30,7 @@ export const ApiProvider = ({ children }) => {
   }
 
   const [accessToken, setAccessToken] = useLocalStorage("accessToken", "");
+  const [userError, setUserError] = useState(null);
   const [userData, setUserData] = useState({
     name: "",
     role: "",
@@ -75,6 +84,56 @@ export const ApiProvider = ({ children }) => {
     setUserData({ name: "", role: "", id: "", email: "" });
   }, [setAccessToken]);
 
+  const login = useCallback(
+    async (email, password) => {
+      setUserError(null);
+      try {
+        const response = await axiosApiPublic.post("/auth/login", {
+          email,
+          password,
+        });
+        if (response.data.token) {
+          setAccessToken(response.data.token);
+          const decoded = jwtDecode(response.data.token);
+          setUserData({
+            name: decoded.name || "",
+            role: decoded.role || "",
+            id: decoded.id || "",
+            email: decoded.email || "",
+          });
+          return decoded.role;
+        } else {
+          setUserError(response.data.error);
+          return null;
+        }
+      } catch (error) {
+        setUserError(getErrMsg(error));
+      }
+    },
+    [axiosApiPublic]
+  );
+
+  const signup = useCallback(
+    async (email, password, name, role, securityQuestion, securityAnswer) => {
+      setUserError(null);
+      try {
+        const response = await axiosApiPublic.post("/auth/signup", {
+          email,
+          password,
+          name,
+          role,
+          securityQuestion,
+          securityAnswer,
+        });
+        return response.data;
+      } catch (error) {
+        setUserError(getErrMsg(error));
+        return null;
+      }
+    },
+    [axiosApiPublic]
+  );
+
   useEffect(() => {
     if (accessToken) {
       try {
@@ -97,14 +156,27 @@ export const ApiProvider = ({ children }) => {
   const contextValue = useMemo(
     () => ({
       accessToken,
+      userError,
       setAccessToken,
       logout,
+      login,
+      signup,
       axiosApiPrivate,
       axiosApiPublic,
       userData,
       setUserData,
     }),
-    [accessToken, setAccessToken, logout, axiosApiPrivate, axiosApiPublic, userData]
+    [
+      accessToken,
+      userError,
+      setAccessToken,
+      logout,
+      login,
+      signup,
+      axiosApiPrivate,
+      axiosApiPublic,
+      userData,
+    ]
   );
 
   return (
