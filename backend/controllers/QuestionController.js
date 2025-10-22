@@ -13,6 +13,7 @@ class QuestionController {
 
     const questions = await prisma.question.findMany({
       where: { testId: parseInt(testId) },
+      orderBy: { id: "asc" },
     });
 
     return res.status(200).json({

@@ -52,7 +52,12 @@ class ResponseController {
     if (!req.body) throw new BadRequestError("No request body provided");
     const { marksAwarded, isCorrect } = req.body;
 
-    if (!marksAwarded || !isCorrect) {
+    if (
+      marksAwarded === undefined ||
+      marksAwarded === null ||
+      isCorrect === undefined ||
+      isCorrect === null
+    ) {
       throw new BadRequestError("marksAwarded & isCorrect are required");
     }
 
@@ -70,7 +75,10 @@ class ResponseController {
     }
 
     const updatedResponse = await prisma.response.update({
-      data: { marksAwarded: parseInt(marksAwarded), isCorrect: isCorrect === 'true' },
+      data: {
+        marksAwarded: parseFloat(marksAwarded),
+        isCorrect: Boolean(isCorrect),
+      },
       where: { id: parseInt(responseId) },
     });
 
@@ -104,12 +112,10 @@ class ResponseController {
 
   getAllResponsesByStudentForTest = async (req, res) => {
     const { testId } = req.params;
-    const { studentId } = req.query; // For faculty to check any student's responses
+    const { studentId } = req.query;
 
-    // If no studentId provided, use current user (student checking their own)
     const targetStudentId = studentId ? parseInt(studentId) : req.user.id;
 
-    // If faculty is checking another student's responses, verify test ownership
     if (studentId && req.user.id !== targetStudentId) {
       const test = await prisma.test.findUnique({
         where: { id: parseInt(testId) },
@@ -136,6 +142,11 @@ class ResponseController {
             name: true,
             email: true,
           },
+        },
+      },
+      orderBy: {
+        question: {
+          id: "asc",
         },
       },
     });
