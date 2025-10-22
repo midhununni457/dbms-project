@@ -177,6 +177,46 @@ class ResponseController {
       responses: responses,
     });
   };
+
+  getAllStudentsWhoAttemptedTest = async (req, res) => {
+    const { testId } = req.params;
+
+    // Verify test exists and user has permission
+    const test = await prisma.test.findUnique({
+      where: { id: parseInt(testId) },
+    });
+    if (!test) throw new NotFoundError("Test not found");
+
+    // Only faculty who created the test can view this
+    if (test.facultyId !== req.user.id) {
+      throw new ForbiddenError(
+        "You are not authorized to view students for this test."
+      );
+    }
+
+    const responses = await prisma.response.findMany({
+      where: {
+        testId: parseInt(testId),
+      },
+      select: {
+        student: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      distinct: ["studentId"],
+    });
+
+    const uniqueStudents = responses.map((response) => response.student);
+
+    return res.status(200).json({
+      message: "Students who attempted the test fetched successfully",
+      students: uniqueStudents,
+    });
+  };
 }
 
 module.exports = ResponseController;

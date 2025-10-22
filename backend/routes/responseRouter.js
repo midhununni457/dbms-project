@@ -9,18 +9,24 @@ const {
 } = require("../middlewares/response");
 const { isValidTestID: validateTestIdParam } = require("../middlewares/test");
 
+router.get(
+  "/test/:testId/student",
+  validateTestIdParam,
+  responseController.getAllResponsesByStudentForTest
+);
+
+router.get(
+  "/test/:testId/all",
+  validateTestIdParam,
+  responseController.getAllStudentsWhoAttemptedTest
+);
+
 // Student only route
 router.post(
   "/create",
   AuthMiddleware.authorizeStudent,
   validateResponse,
   responseController.createResponse
-);
-
-router.get(
-  "/test/:testId/student",
-  validateTestIdParam,
-  responseController.getAllResponsesByStudentForTest
 );
 
 // Faculty only routes
@@ -40,6 +46,5 @@ router.put(
   isValidResponseID,
   responseController.updateResponse
 );
-
 
 module.exports = router;
