@@ -5,7 +5,9 @@ const {
   validateResponse,
   isValidResponseID,
   isValidQuestionID,
+  isValidTestID,
 } = require("../middlewares/response");
+const { isValidTestID: validateTestIdParam } = require("../middlewares/test");
 
 // Student only route
 router.post(
@@ -13,6 +15,12 @@ router.post(
   AuthMiddleware.authorizeStudent,
   validateResponse,
   responseController.createResponse
+);
+
+router.get(
+  "/test/:testId/student",
+  validateTestIdParam,
+  responseController.getAllResponsesByStudentForTest
 );
 
 // Faculty only routes
@@ -32,9 +40,6 @@ router.put(
   isValidResponseID,
   responseController.updateResponse
 );
-router.get(
-  "/test/:testId/student",
-  responseController.getAllResponsesByStudentForTest
-);
+
 
 module.exports = router;

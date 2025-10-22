@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const TestAttemptPage = () => {
+const page = () => {
   const { axiosApiPrivate } = useApi();
   const params = useParams();
   const router = useRouter();
@@ -134,7 +134,7 @@ const TestAttemptPage = () => {
         setSubmitStatus('success');
         setSubmitMessage("Test submitted successfully! Redirecting...");
         setTimeout(() => {
-          router.push("/tests");
+          router.push(`/test/${testId}/results`);
         }, 1500);
       } else {
         setSubmitStatus('partial_error');
@@ -236,5 +236,5 @@ const TestAttemptPage = () => {
   );
 };
 
-export default TestAttemptPage;
+export default page;
 
