@@ -84,7 +84,17 @@ const page = () => {
                   {test.description || "No description"}
                 </CardDescription>
               </CardHeader>
-              <CardFooter className="flex justify-end">
+              <CardFooter className="flex justify-end gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/dashboard/${test.id}/responses`);
+                  }}
+                >
+                  Responses
+                </Button>
                 <Button variant="outline" size="sm">
                   View
                 </Button>
