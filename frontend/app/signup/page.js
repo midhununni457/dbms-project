@@ -15,10 +15,11 @@ import {
 import { LoadingButton } from "@/components/ui/loading-button";
 import { cn } from "@/lib/utils";
 import { useApi } from "@/context/ApiContext";
+import { getErrMsg } from "@/hooks/errorParser";
 
 const page = () => {
   const router = useRouter();
-  const { signup } = useApi();
+  const { signup, userError } = useApi();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,7 +86,9 @@ const page = () => {
       setLoading(false);
       setTimeout(() => router.push("/login"), 900);
     } catch (err) {
-      setError("Network error. Please try again.");
+      if (userError) {
+        setError(userError);
+      } else setError(getErrMsg(err));
       setLoading(false);
     }
   };
@@ -178,8 +181,7 @@ const page = () => {
                     htmlFor="role"
                     className="text-sm font-medium mb-1 block"
                   >
-                    Role{" "}
-                    <span className="text-destructive">*</span>
+                    Role <span className="text-destructive">*</span>
                   </label>
                   <select
                     id="role"

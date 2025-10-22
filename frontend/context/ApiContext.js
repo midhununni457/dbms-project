@@ -128,7 +128,7 @@ export const ApiProvider = ({ children }) => {
         return response.data;
       } catch (error) {
         setUserError(getErrMsg(error));
-        return null;
+        return { error: getErrMsg(error) };
       }
     },
     [axiosApiPublic]
