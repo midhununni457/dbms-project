@@ -18,7 +18,7 @@ const IncorrectIcon = () => (
 );
 
 
-const TestResultsPage = () => {
+const page = () => {
   const { axiosApiPrivate, userData } = useApi();
   const params = useParams();
   const router = useRouter();
@@ -54,7 +54,7 @@ const TestResultsPage = () => {
                const testDetails = await axiosApiPrivate.get(`/tests/test/${testId}`);
                setTestTitle(testDetails.data.test.title || "Test Results");
            } catch {
-               setTestTitle("Test Results"); 
+               setTestTitle("Test Results");
            }
         }
 
@@ -91,17 +91,17 @@ const TestResultsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-10">
-        <p className="text-gray-500">Loading results...</p>
+      <div className="container mx-auto max-w-4xl py-10 px-4">
+        <p className="text-muted-foreground text-center">Loading results...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto py-10">
-        <p className="text-red-500">{error}</p>
-        <Button onClick={() => router.push("/tests")} className="mt-4">
+      <div className="container mx-auto max-w-4xl py-10 px-4 text-center">
+        <p className="text-red-600 font-medium">{error}</p>
+        <Button onClick={() => router.push("/tests")} className="mt-6">
           Back to Tests
         </Button>
       </div>
@@ -109,26 +109,36 @@ const TestResultsPage = () => {
   }
 
   return (
-    <div className="container mx-auto flex flex-col gap-6 py-10">
-      <div className="space-y-2 border-b pb-4">
-        <h1 className="text-4xl font-bold">{testTitle || `Results for Test ID: ${testId}`}</h1>
-        <p className="text-lg text-gray-600">
-          Review your submitted answers and marks.
-        </p>
-        <div className="pt-2">
-            <p className="text-xl font-semibold">
-                Preliminary Score (MCQs Only): {score.awarded} / {score.totalMcqMarks || score.total}
-            </p>
-             <p className="text-sm text-gray-500">
-                (Total marks for all questions: {score.total}. *Note: Final score may vary after manual grading.)
+    <div className="container mx-auto max-w-4xl flex flex-col gap-8 py-10 px-4">
+      <div className="flex justify-between items-start gap-4 border-b pb-4 flex-wrap">
+        <div className="space-y-1 flex-grow mr-4"> 
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{testTitle || `Results for Test ID: ${testId}`}</h1>
+          <p className="text-lg text-muted-foreground">
+            Review your submitted answers and marks.
+          </p>
+          <p className="text-m text-muted-foreground italic">
+            *Note: Grading pending for descriptive questions.
+          </p>
+        </div>
+
+        <div className="w-full sm:w-auto mt-4 sm:mt-4 text-right sm:text-right flex flex-col items-end">
+            <h3 className="text-sm font-semibold mb-1 text-muted-foreground">Preliminary Score (MCQs Only)</h3>
+            <div className="bg-muted text-foreground rounded-md px-3 py-1 border inline-block"> 
+                <p className="text-xl font-bold">
+                    {score.awarded} / {score.totalMcqMarks || score.total}
+                </p>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+                Max: {score.total} marks.
             </p>
         </div>
       </div>
 
+
       <div className="space-y-4">
         {responses.length === 0 ? (
-          <Card className="p-6">
-            <p className="text-gray-500 text-center">
+          <Card className="p-6 border-dashed border-border">
+            <p className="text-muted-foreground text-center">
               You have not submitted responses for this test yet.
             </p>
              <div className="text-center mt-4">
@@ -184,11 +194,14 @@ const TestResultsPage = () => {
         )}
       </div>
 
-      <Button onClick={() => router.push("/tests")} variant="outline" className="w-full max-w-xs mx-auto">
-        Back to All Tests
-      </Button>
+      <div className="mt-6 text-center">
+        <Button onClick={() => router.push("/tests")} variant="outline" className="w-full max-w-xs">
+          Back to All Tests
+        </Button>
+      </div>
     </div>
   );
 };
 
-export default TestResultsPage;
+export default page;
+

@@ -63,7 +63,7 @@ const page = () => {
               </CardHeader>
               <CardFooter className="flex justify-end">
                 <Button variant="outline" size="sm">
-                  Start Test
+                  Show
                 </Button>
               </CardFooter>
             </Card>
