@@ -1,7 +1,7 @@
 "use client";
 import { useApi } from "@/context/ApiContext";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 const page = () => {
   const { axiosApiPrivate } = useApi();
   const params = useParams();
+  const router = useRouter();
   const testId = params.testId;
 
   const [test, setTest] = useState(null);
@@ -177,6 +178,13 @@ const page = () => {
         <p className="text-lg text-gray-600">
           {test.description || "No description"}
         </p>
+        <Button
+          variant="default"
+          onClick={() => router.push(`/dashboard/${testId}/responses`)}
+          className=""
+        >
+          View All Responses
+        </Button>
       </div>
 
       {/* Add Question Section */}
@@ -289,9 +297,9 @@ const page = () => {
                       )}
                     </div>
                   ))}
-                  <Button 
-                    variant="outline" 
-                    onClick={handleAddOption} 
+                  <Button
+                    variant="outline"
+                    onClick={handleAddOption}
                     size="sm"
                     className="bg-zinc-800 hover:bg-zinc-700"
                   >
@@ -357,6 +365,15 @@ const page = () => {
             </Card>
           ))
         )}
+      </div>
+      <div className="mt-6 text-center">
+        <Button
+          onClick={() => router.push("/dashboard")}
+          variant="outline"
+          className="w-full max-w-xs"
+        >
+          Back to Dashboard
+        </Button>
       </div>
     </div>
   );
