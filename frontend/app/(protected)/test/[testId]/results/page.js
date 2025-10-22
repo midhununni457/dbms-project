@@ -5,7 +5,20 @@ import { useParams, useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-const page = () => {
+const CorrectIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600 inline-block ml-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+    </svg>
+);
+
+const IncorrectIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600 inline-block ml-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+    </svg>
+);
+
+
+const TestResultsPage = () => {
   const { axiosApiPrivate, userData } = useApi();
   const params = useParams();
   const router = useRouter();
@@ -35,10 +48,14 @@ const page = () => {
               const testDetails = await axiosApiPrivate.get(`/tests/test/${testId}`);
               setTestTitle(testDetails.data.test.title || "Test Results");
           }
-
         } else {
           setResponses([]);
-          setTestTitle("Test Results");
+           try {
+               const testDetails = await axiosApiPrivate.get(`/tests/test/${testId}`);
+               setTestTitle(testDetails.data.test.title || "Test Results");
+           } catch {
+               setTestTitle("Test Results"); 
+           }
         }
 
       } catch (err) {
@@ -102,7 +119,7 @@ const page = () => {
             <p className="text-xl font-semibold">
                 Preliminary Score (MCQs Only): {score.awarded} / {score.totalMcqMarks || score.total}
             </p>
-            <p className="text-sm text-gray-500">
+             <p className="text-sm text-gray-500">
                 (Total marks for all questions: {score.total}. *Note: Final score may vary after manual grading.)
             </p>
         </div>
@@ -112,27 +129,44 @@ const page = () => {
         {responses.length === 0 ? (
           <Card className="p-6">
             <p className="text-gray-500 text-center">
-              No responses found for this test.
+              You have not submitted responses for this test yet.
             </p>
+             <div className="text-center mt-4">
+                 <Button onClick={() => router.push(`/test/${testId}`)}>Attempt Test</Button>
+             </div>
           </Card>
         ) : (
           responses.map((response, index) => (
-            <Card key={response.id} className="p-6 bg-card">
+            <Card key={response.id} className="p-6 bg-card overflow-hidden">
               <CardHeader className="px-0 pt-0">
                 <CardTitle className="text-lg flex justify-between items-start">
-                  <span>
+                  <span className="flex-1">
                     Q{index + 1}. {response.question?.text || "Question text missing"}
                   </span>
-                  <span className="text-sm font-normal bg-muted px-2 py-1 rounded">
+                  <span className="text-sm font-normal bg-muted px-2 py-1 rounded ml-4 whitespace-nowrap">
                      {response.question?.marks || "?"} {response.question?.marks === 1 ? "mark" : "marks"}
                   </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-0 pb-0 space-y-3">
-                <div className="p-3 bg-muted/50 rounded border border-border">
-                  <p className="text-sm font-medium mb-1 text-muted-foreground">Your Answer:</p>
-                  <p className="text-sm whitespace-pre-wrap">{response.answer}</p>
+                <div className="p-3 bg-muted/50 rounded border border-border relative">
+                   <p className="text-sm font-medium mb-1 text-muted-foreground">Your Answer:</p>
+                   <p className="text-sm whitespace-pre-wrap pr-8">{response.answer}</p>
+
+                   {response.question?.type === 'mcq' && response.marksAwarded !== null && (
+                       <div className="absolute top-2 right-2">
+                           {response.isCorrect ? <CorrectIcon /> : <IncorrectIcon />}
+                       </div>
+                   )}
                 </div>
+
+                 {response.question?.type === 'mcq' && !response.isCorrect && response.question.answer && (
+                     <div className="p-3 bg-green-50 rounded border border-green-200">
+                         <p className="text-sm font-medium mb-1 text-green-700">Correct Answer:</p>
+                         <p className="text-sm whitespace-pre-wrap text-green-800">{response.question.answer}</p>
+                     </div>
+                 )}
+
                 <div className="pt-2 text-right">
                     {response.marksAwarded !== null ? (
                         <p className={`font-semibold ${response.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
@@ -143,9 +177,6 @@ const page = () => {
                             Pending Grading
                         </p>
                     )}
-                     {response.question?.type === 'mcq' && !response.isCorrect && response.question.answer && (
-                         <p className="text-sm text-muted-foreground mt-1">Correct Answer: {response.question.answer}</p>
-                     )}
                 </div>
               </CardContent>
             </Card>
@@ -160,4 +191,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default TestResultsPage;
