@@ -38,7 +38,7 @@ const page = () => {
   return (
     <div className="container mx-auto flex flex-col gap-4 py-10">
       <div className="flex justify-between items-center w-full">
-        <h1 className="text-4xl font-bold mb-4">Available Tests</h1>
+        <h1 className="text-4xl font-bold mb-4">All Tests</h1>
       </div>
 
       {isLoading ? (

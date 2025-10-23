@@ -180,7 +180,7 @@ const page = () => {
               disabled
               value={response.answer || ""}
               placeholder="Long answer..."
-              className="mt-2 min-h-[100px] w-full p-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary bg-gray-50"
+              className="mt-2 min-h-[100px] w-full p-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
             />
           );
         default:

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,14 @@ const page = () => {
     if (!emailRe.test(email)) return "Please enter a valid email address.";
     return null;
   };
+
+  useEffect(() => {
+    if (userData.role === "student") {
+      router.push("/tests");
+    } else if (userData.role === "faculty") {
+      router.push("/dashboard");
+    }
+  }, [userData.role, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,9 +73,9 @@ const page = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-pink-600/20 via-violet-900/30 to-indigo-900/40 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
-        <Card>
+        <Card className="border border-purple-600/50 rounded-lg shadow-lg">
           <CardHeader className="px-6 pt-6">
             <CardTitle>Sign in</CardTitle>
             <CardDescription>
@@ -151,6 +159,7 @@ const page = () => {
                   <Button
                     variant="ghost"
                     size="sm"
+                    type="button"
                     onClick={() => router.push("/signup")}
                   >
                     Sign up
@@ -159,13 +168,13 @@ const page = () => {
               </div>
             </form>
           </CardContent>
-
+          {/* 
           <CardFooter className="px-6 pb-6">
             <p className="text-xs text-muted-foreground">
               Make sure your institution account is active. Contact your
               administrator if you have access issues.
             </p>
-          </CardFooter>
+          </CardFooter> */}
         </Card>
       </div>
     </div>

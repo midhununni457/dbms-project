@@ -125,7 +125,7 @@ const page = () => {
             <h3 className="text-sm font-semibold mb-1 text-muted-foreground">Preliminary Score (MCQs Only)</h3>
             <div className="bg-muted text-foreground rounded-md px-3 py-1 border inline-block"> 
                 <p className="text-xl font-bold">
-                    {score.awarded} / {score.totalMcqMarks || score.total}
+                    {score.awarded} / {score.total}
                 </p>
             </div>
             <p className="text-xs text-muted-foreground mt-2">

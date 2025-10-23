@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { getErrMsg } from "@/hooks/errorParser";
 
 const page = () => {
   const router = useRouter();
-  const { signup, userError } = useApi();
+  const { signup, userError, userData } = useApi();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -93,10 +93,18 @@ const page = () => {
     }
   };
 
+  useEffect(() => {
+    if (userData.role === "student") {
+      router.push("/tests");
+    } else if (userData.role === "faculty") {
+      router.push("/dashboard");
+    }
+  }, [userData.role, router]);
+
   return (
-    <div className="min-h-screen bg-muted/30 flex items-start justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="">
-        <Card className="md:flex">
+    <div className="min-h-screen bg-gradient-to-br from-pink-600/20 via-violet-900/30 to-indigo-900/40 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-2xl">
+        <Card className="md:flex border border-purple-600/50 rounded-lg shadow-lg">
           {/* Form content */}
           <div className="w-full">
             <CardHeader className="px-6 pt-6">
@@ -278,17 +286,13 @@ const page = () => {
                     <Button
                       variant="ghost"
                       size="sm"
+                      type="button"
                       onClick={() => router.push("/login")}
                     >
                       Go to login
                     </Button>
                   </div>
                 </div>
-
-                <p className="text-xs text-muted-foreground mt-2">
-                  By creating an account you agree to the portal's terms of use.
-                  Contact your administrator for institutional account issues.
-                </p>
               </form>
             </CardContent>
 
